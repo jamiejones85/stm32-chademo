@@ -207,44 +207,29 @@ void ISA::Store(Can* can) {
 }
 
 
-// void ISA::initialize()
-// {
+void ISA::initialize(Can* can) {
   
+    ISA::Stop(can);
+    // 	delay(700);?
+        uint32_t data[8] = { 0x20, 0x42, 0x02, 0x60, 0x00, 0x00, 0x00, 0x00 };
 
-// 	firstframe=false;
-// 	STOP();
-// 	delay(700);
-// 	for(int i=0;i<9;i++)
-// 	{
-	
-// Serial.println("initialization \n");
-	
-// 	outframe.id = 0x411;      // Set our transmission address ID
-//         outframe.length = 8;       // Data payload 8 bytes
-//         outframe.extended = 0; // Extended addresses  0=11-bit1=29bit
-//         outframe.rtr=1;                 //No request
-//         outframe.data.bytes[0]=(0x20+i);
-//         outframe.data.bytes[1]=0x42;  
-//         outframe.data.bytes[2]=0x02;
-//         outframe.data.bytes[3]=(0x60+(i*18));
-//         outframe.data.bytes[4]=0x00;
-//         outframe.data.bytes[5]=0x00;
-//         outframe.data.bytes[6]=0x00;
-//         outframe.data.bytes[7]=0x00;
-
-// 	   canPort->sendFrame(outframe);
+    for(int i=0;i<9;i++) {
+        data[0] = 0x20 + i;
+        data[3] = 0x60 + (i*18);
+        can->Send(0x411, data);
      
-//        if(debug)printCAN(&outframe);
-// 	   delay(500);
+        //if(debug)printCAN(&outframe);
+        //delay(500);
       
-//        sendSTORE();
-//        delay(500);
-//      }
-//     //  delay(500);
-//       START();
-//       delay(500);
-//       lastAs=As;
-//       lastWh=wh;
+        ISA::Store(can);
+        //delay(500);
+    }
+    
+    //delay(500);
+    ISA::Start(can);
+    //delay(500);
+    ISA::lastAs = ISA::As;
+    ISA::lastWh = ISA::wh;
 
                       
-// }
+}
