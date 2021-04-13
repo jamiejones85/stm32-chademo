@@ -154,40 +154,59 @@ void ISA::handle528(uint32_t data[2])  //kiloWatt-hours
 }
 
 void ISA::Start(Can* can) {
-
+           
+    uint32_t data[8] = { 0x34, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    can->Send(0x411, data);
+     
+    //if(debug)printCAN(&outframe); //If the debug variable is set, show our transmitted frame
 }
-void ISA::Stop(Can* can) {
 
+void ISA::Stop(Can* can) {
+    uint32_t data[8] = { 0x34, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    can->Send(0x411, data);
+
+    //if(debug) {printCAN(&outframe);} //If the debug variable is set, show our transmitted frame
 }
 void ISA::Restart(Can* can) {
-
+    //Has the effect of zeroing AH and KWH  
+    uint32_t data[8] = { 0x3F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    can->Send(0x411, data);
+     
+    //if(debug)printCAN(&outframe); //If the debug variable is set, show our transmitted frame
 }
 void ISA::Default(Can* can) {
-
+    //Returns module to original defaults  
+    uint32_t data[8] = { 0x3D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    can->Send(0x411, data);
+    //if(debug)printCAN(&outframe); //If the debug variable is set, show our transmitted frame
 }
 void ISA::InitCurrent(Can* can) {
+    ISA::Stop(can);
+    //delay(500);?
 
+    uint32_t data[8] = { 0x21, 0x42, 0x01, 0x61, 0x00, 0x00, 0x00, 0x00 };
+    can->Send(0x411, data);
+
+    //if(debug)printCAN(&outframe);
+    //delay(500);
+      
+    ISA::Store(can);
+    //delay(500);
+    ISA::Start(can);
+
+    //delay(500);
+    lastAs=As;
+    lastWh=wh;                
+}
+
+void ISA::Store(Can* can) {
+
+    uint32_t data[8] = { 0x32, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    can->Send(0x411, data);
+    //if(debug)printCAN(&outframe); //If the debug variable is set, show our transmitted frame
 }
 
 
-// void ISA::printCAN(uint32_t data[2])
-// {
-	
-//    //This routine simply prints a timestamp and the contents of the 
-//    //incoming CAN message
-   
-// 	milliseconds = (int) (millis()/1) %1000 ;
-// 	seconds = (int) (millis() / 1000) % 60 ;
-//     minutes = (int) ((millis() / (1000*60)) % 60);
-// 	hours   = (int) ((millis() / (1000*60*60)) % 24);
-// 	sprintf(buffer,"%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
-// 	Serial<<buffer<<" ";
-//     sprintf(bigbuffer,"%02X %02X %02X %02X %02X %02X %02X %02X %02X", 
-//     frame->id, frame->data.bytes[0],frame->data.bytes[1],frame->data.bytes[2],
-//     frame->data.bytes[3],frame->data.bytes[4],frame->data.bytes[5],frame->data.bytes[6],frame->data.bytes[7],0);
-//     Serial<<"Rcvd ISA frame: 0x"<<bigbuffer<<"\n";
-    
-// }
 // void ISA::initialize()
 // {
   
@@ -228,150 +247,4 @@ void ISA::InitCurrent(Can* can) {
 //       lastWh=wh;
 
                       
-// }
-
-// void ISA::STOP()
-// {
-
-// //SEND STOP///////
-
-// 	    outframe.id = 0x411;      // Set our transmission address ID
-//         outframe.length = 8;       // Data payload 8 bytes
-//         outframe.extended = 0; // Extended addresses  0=11-bit1=29bit
-//         outframe.rtr=1;                 //No request
-//         outframe.data.bytes[0]=0x34;
-//         outframe.data.bytes[1]=0x00;  
-//         outframe.data.bytes[2]=0x01;
-//         outframe.data.bytes[3]=0x00;
-//         outframe.data.bytes[4]=0x00;
-//         outframe.data.bytes[5]=0x00;
-//         outframe.data.bytes[6]=0x00;
-//         outframe.data.bytes[7]=0x00;
-// 		canPort->sendFrame(outframe);
-     
-//         if(debug) {printCAN(&outframe);} //If the debug variable is set, show our transmitted frame
-// } 
-// void ISA::sendSTORE()
-// {
-
-// //SEND STORE///////
-
-// 	outframe.id = 0x411;      // Set our transmission address ID
-//         outframe.length = 8;       // Data payload 8 bytes
-//         outframe.extended = 0; // Extended addresses  0=11-bit1=29bit
-//         outframe.rtr=1;                 //No request
-//         outframe.data.bytes[0]=0x32;
-//         outframe.data.bytes[1]=0x00;  
-//         outframe.data.bytes[2]=0x00;
-//         outframe.data.bytes[3]=0x00;
-//         outframe.data.bytes[4]=0x00;
-//         outframe.data.bytes[5]=0x00;
-//         outframe.data.bytes[6]=0x00;
-//         outframe.data.bytes[7]=0x00;
-// 		canPort->sendFrame(outframe);
-     
-//         if(debug)printCAN(&outframe); //If the debug variable is set, show our transmitted frame
-        
-// }   
-
-// void ISA::START()
-// {
-           
-//  //SEND START///////
-
-// 	    outframe.id = 0x411;      // Set our transmission address ID
-//         outframe.length = 8;       // Data payload 8 bytes
-//         outframe.extended = 0; // Extended addresses  0=11-bit1=29bit
-//         outframe.rtr=1;                 //No request
-//         outframe.data.bytes[0]=0x34;
-//         outframe.data.bytes[1]=0x01;  
-//         outframe.data.bytes[2]=0x01;
-//         outframe.data.bytes[3]=0x00;
-//         outframe.data.bytes[4]=0x00;
-//         outframe.data.bytes[5]=0x00;
-//         outframe.data.bytes[6]=0x00;
-//         outframe.data.bytes[7]=0x00;
-// 		canPort->sendFrame(outframe);
-     
-//         if(debug)printCAN(&outframe); //If the debug variable is set, show our transmitted frame
-// }
-
-// void ISA::RESTART()
-// {
-//          //Has the effect of zeroing AH and KWH  
-
-// 	    outframe.id = 0x411;      // Set our transmission address ID
-//         outframe.length = 8;       // Data payload 8 bytes
-//         outframe.extended = 0; // Extended addresses  0=11-bit1=29bit
-//         outframe.rtr=1;                 //No request
-//         outframe.data.bytes[0]=0x3F;
-//         outframe.data.bytes[1]=0x00;  
-//         outframe.data.bytes[2]=0x00;
-//         outframe.data.bytes[3]=0x00;
-//         outframe.data.bytes[4]=0x00;
-//         outframe.data.bytes[5]=0x00;
-//         outframe.data.bytes[6]=0x00;
-//         outframe.data.bytes[7]=0x00;
-// 		canPort->sendFrame(outframe);
-     
-//         if(debug)printCAN(&outframe); //If the debug variable is set, show our transmitted frame
-// }
-
-
-// void ISA::deFAULT()
-// {
-//          //Returns module to original defaults  
-
-// 	    outframe.id = 0x411;      // Set our transmission address ID
-//         outframe.length = 8;       // Data payload 8 bytes
-//         outframe.extended = 0; // Extended addresses  0=11-bit1=29bit
-//         outframe.rtr=1;                 //No request
-//         outframe.data.bytes[0]=0x3D;
-//         outframe.data.bytes[1]=0x00;  
-//         outframe.data.bytes[2]=0x00;
-//         outframe.data.bytes[3]=0x00;
-//         outframe.data.bytes[4]=0x00;
-//         outframe.data.bytes[5]=0x00;
-//         outframe.data.bytes[6]=0x00;
-//         outframe.data.bytes[7]=0x00;
-// 		canPort->sendFrame(outframe);
-     
-//         if(debug)printCAN(&outframe); //If the debug variable is set, show our transmitted frame
-// }
-
-
-// void ISA::initCurrent()
-// {
-// 	STOP();
-// 	delay(500);
-	
-	
-// Serial.println("initialization \n");
-	
-// 	outframe.id = 0x411;      // Set our transmission address ID
-//         outframe.length = 8;       // Data payload 8 bytes
-//         outframe.extended = 0; // Extended addresses  0=11-bit1=29bit
-//         outframe.rtr=1;                 //No request
-//         outframe.data.bytes[0]=(0x21);
-//         outframe.data.bytes[1]=0x42;  
-//         outframe.data.bytes[2]=0x01;
-//         outframe.data.bytes[3]=(0x61);
-//         outframe.data.bytes[4]=0x00;
-//         outframe.data.bytes[5]=0x00;
-//         outframe.data.bytes[6]=0x00;
-//         outframe.data.bytes[7]=0x00;
-
-// 		canPort->sendFrame(outframe);
-     
-//        if(debug)printCAN(&outframe);
-// 	delay(500);
-      
-//        sendSTORE();
-//        delay(500);
-    
-//     //  delay(500);
-//       START();
-//       delay(500);
-//       lastAs=As;
-//       lastWh=wh;                      
 // }

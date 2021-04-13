@@ -23,6 +23,7 @@ class ISA
       static void Restart(Can* can);
       static void Default(Can* can);
       static void InitCurrent(Can* can);
+      static void Store(Can* can);
 
 	  static float Amperes;   // Floating point with current in Amperes
 	  static double AH;      //Floating point with accumulated ampere-hours
