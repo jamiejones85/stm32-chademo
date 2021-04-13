@@ -1,15 +1,40 @@
 #include <SimpleISA.h>
 
+    int ISA::framecount = 0;
+    float ISA::Amperes;   // Floating point with current in Amperes
+	double ISA::AH;      //Floating point with accumulated ampere-hours
+	double ISA::KW;
+	double ISA::KWH;
+
+    double ISA::Voltage;
+    double ISA::Voltage1;
+    double ISA::Voltage2;
+    double ISA::Voltage3;
+    double ISA::VoltageHI;
+    double ISA::Voltage1HI;
+    double ISA::Voltage2HI;
+    double ISA::Voltage3HI;
+    double ISA::VoltageLO;
+    double ISA::Voltage1LO;
+    double ISA::Voltage2LO;
+    double ISA::Voltage3LO;
+    double ISA::milliamps;
+    double ISA::Temperature;
+    long ISA::watt;
+	long ISA::As;
+	long ISA::lastAs;
+	long ISA::wh;
+  	long ISA::lastWh;	
 
 void ISA::handle521(uint32_t data[2])  //AMperes
 
 {	
-	// framecount++;
-	// long current=0;
-    // current = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
+	ISA::framecount++;
+	long current=0;
+    current = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
-    // milliamps=current;
-    // Amperes=current/1000.0f;
+    ISA::milliamps=current;
+    ISA::Amperes=current/1000.0f;
 
     //  if(debug2)Serial<<"Current: "<<Amperes<<" amperes "<<milliamps<<" ma frames:"<<framecount<<"\n";
     	
@@ -18,21 +43,21 @@ void ISA::handle521(uint32_t data[2])  //AMperes
 void ISA::handle522(uint32_t data[2])  //Voltage
 
 {	
-// 	framecount++;
-// 	long volt=0;
-//     volt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
+    ISA::framecount++;
+	long volt=0;
+    volt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
-//     Voltage=volt/1000.0f;
-// 	Voltage1=Voltage-(Voltage2+Voltage3);
-//   if(framecount<150)
-//     {
-//       VoltageLO=Voltage;
-//       Voltage1LO=Voltage1;
-//     }
-//   if(Voltage<VoltageLO &&  framecount>150)VoltageLO=Voltage;
-//   if(Voltage>VoltageHI && framecount>150)VoltageHI=Voltage;
-//   if(Voltage1<Voltage1LO && framecount>150)Voltage1LO=Voltage1;
-//   if(Voltage1>Voltage1HI && framecount>150)Voltage1HI=Voltage1;
+    ISA::Voltage=volt/1000.0f;
+	ISA::Voltage1=Voltage-(Voltage2+Voltage3);
+    if(ISA::framecount<150)
+    {
+        ISA::VoltageLO = ISA::Voltage;
+        ISA::Voltage1LO = ISA::Voltage1;
+    }
+    if(ISA::Voltage < ISA::VoltageLO &&  ISA::framecount>150) ISA::VoltageLO = ISA::Voltage;
+    if(ISA::Voltage > ISA::VoltageHI && ISA::framecount>150) ISA::VoltageHI = ISA::Voltage;
+    if(ISA::Voltage1 < ISA::Voltage1LO && ISA::framecount>150) ISA::Voltage1LO = ISA::Voltage1;
+    if(ISA::Voltage1 > ISA::Voltage1HI && ISA::framecount>150) ISA::Voltage1HI = ISA::Voltage1;
   
     // if(debug2)Serial<<"Voltage: "<<Voltage<<" vdc Voltage 1: "<<Voltage1<<" vdc "<<volt<<" mVdc frames:"<<framecount<<"\n";
      	
@@ -41,15 +66,15 @@ void ISA::handle522(uint32_t data[2])  //Voltage
 void ISA::handle523(uint32_t data[2]) //Voltage2
 
 {	
-	// framecount++;
-	// long volt=0;
-    // volt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
+	ISA::framecount++;
+	long volt=0;
+    volt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
-    // Voltage2=volt/1000.0f;
-    // if(Voltage2>3)Voltage2-=Voltage3;
-    // if(framecount<150)Voltage2LO=Voltage2;
-    // if(Voltage2<Voltage2LO  && framecount>150)Voltage2LO=Voltage2;
-    // if(Voltage2>Voltage2HI&& framecount>150)Voltage2HI=Voltage2;
+    ISA::Voltage2 = volt/1000.0f;
+    if(ISA::Voltage2 > 3) ISA::Voltage2 -= ISA::Voltage3;
+    if(ISA::framecount < 150) ISA::Voltage2LO = ISA::Voltage2;
+    if(ISA::Voltage2 < ISA::Voltage2LO  && ISA::framecount > 150) ISA::Voltage2LO = ISA::Voltage2;
+    if(ISA::Voltage2 > ISA::Voltage2HI && ISA::framecount > 150) ISA::Voltage2HI = ISA::Voltage2;
     
 		
     //  if(debug2)Serial<<"Voltage: "<<Voltage<<" vdc Voltage 2: "<<Voltage2<<" vdc "<<volt<<" mVdc frames:"<<framecount<<"\n";
@@ -60,14 +85,14 @@ void ISA::handle523(uint32_t data[2]) //Voltage2
 void ISA::handle524(uint32_t data[2])  //Voltage3
 
 {	
-	// framecount++;
-	// long volt=0;
-    // volt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
+	ISA::framecount++;
+	long volt=0;
+    volt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
-    // Voltage3=volt/1000.0f;
-    // if(framecount<150)Voltage3LO=Voltage3;
-    // if(Voltage3<Voltage3LO && framecount>150 && Voltage3>10)Voltage3LO=Voltage3;
-    // if(Voltage3>Voltage3HI && framecount>150)Voltage3HI=Voltage3;
+    ISA::Voltage3 = volt/1000.0f;
+    if(ISA::framecount < 150) ISA::Voltage3LO = ISA::Voltage3;
+    if(ISA::Voltage3 < ISA::Voltage3LO && ISA::framecount > 150 && ISA::Voltage3 > 10) ISA::Voltage3LO = ISA::Voltage3;
+    if(ISA::Voltage3 > ISA::Voltage3HI && ISA::framecount > 150) ISA::Voltage3HI = ISA::Voltage3;
     
     //  if(debug2)Serial<<"Voltage: "<<Voltage<<" vdc Voltage 3: "<<Voltage3<<" vdc "<<volt<<" mVdc frames:"<<framecount<<"\n";
 }
@@ -75,11 +100,11 @@ void ISA::handle524(uint32_t data[2])  //Voltage3
 void ISA::handle525(uint32_t data[2])  //Temperature
 
 {	
-	// framecount++;
-	// long temp=0;
-    // temp = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
+	ISA::framecount++;
+	long temp=0;
+    temp = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
-    // Temperature=temp/10;
+    ISA::Temperature=temp/10;
 		
     //  if(debug2)Serial<<"Temperature: "<<Temperature<<" C  frames:"<<framecount<<"\n";
    
@@ -90,11 +115,11 @@ void ISA::handle525(uint32_t data[2])  //Temperature
 void ISA::handle526(uint32_t data[2]) //Kilowatts
 
 {	
-	// framecount++;
-	// watt=0;
-    // watt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
+	ISA::framecount++;
+	watt = 0;
+    watt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
-    // KW=watt/1000.0f;
+    ISA::KW = watt/1000.0f;
 		
     //  if(debug2)Serial<<"Power: "<<watt<<" Watts  "<<KW<<" kW  frames:"<<framecount<<"\n";
     
@@ -104,12 +129,12 @@ void ISA::handle526(uint32_t data[2]) //Kilowatts
 void ISA::handle527(uint32_t data[2]) //Ampere-Hours
 
 {	
-	// framecount++;
-	// As=0;
-    // As = (data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]);
+	ISA::framecount++;
+	ISA::As = 0;
+    ISA::As = (data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]);
     
-    // AH+=(As-lastAs)/3600.0f;
-    // lastAs=As;
+    ISA::AH += (ISA::As - ISA::lastAs)/3600.0f;
+    ISA::lastAs = ISA::As;
 
 		
     //  if(debug2)Serial<<"Amphours: "<<AH<<"  Ampseconds: "<<As<<" frames:"<<framecount<<"\n";
@@ -119,11 +144,11 @@ void ISA::handle527(uint32_t data[2]) //Ampere-Hours
 void ISA::handle528(uint32_t data[2])  //kiloWatt-hours
 
 {	
-	// framecount++;
+	ISA::framecount++;
 	
-    // wh = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
-    // KWH+=(wh-lastWh)/1000.0f;
-	// lastWh=wh;
+    ISA::wh = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
+    ISA::KWH += (ISA::wh - ISA::lastWh)/1000.0f;
+	ISA::lastWh = ISA::wh;
     //  if(debug2)Serial<<"KiloWattHours: "<<KWH<<"  Watt Hours: "<<wh<<" frames:"<<framecount<<"\n";
    
 }
