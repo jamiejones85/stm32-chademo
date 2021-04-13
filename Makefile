@@ -19,7 +19,7 @@
 
 OUT_DIR      = obj
 PREFIX		?= arm-none-eabi
-CONTROL     ?= SINE
+CONTROL     ?= CHADEMO
 CONTROLLC   := $(shell echo $(CONTROL) | tr A-Z a-z)
 BINARY		= stm32_$(CONTROLLC)
 SIZE        = $(PREFIX)-size
@@ -43,7 +43,7 @@ LDFLAGS    = -Llibopencm3/lib -T$(LDSCRIPT) -nostartfiles -Wl,--gc-sections,-Map
 OBJSL		  = main.o hwinit.o stm32scheduler.o params.o terminal.o terminal_prj.o \
              my_string.o digio.o sine_core.o my_fp.o printf.o anain.o \
              param_save.o errormessage.o stm32_can.o \
-             picontroller.o
+             picontroller.o chademo.o simpleISA.o
 
 OBJS     = $(patsubst %.o,obj/%.o, $(OBJSL))
 vpath %.c src/ libopeninv/src

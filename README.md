@@ -1,27 +1,5 @@
-# stm32-template
-This project can be a starting point to your own STM32 project. It contains facilities that make software
-development easier and ensures compatibility with the esp8266 web interface.
+# stm32-chademo
 
-It provides
-- Mostly object oriented syntax
-- A simple, hardware based scheduler for recurring tasks
-- Analog input management, fully independent with DMA
-- Digital I/O management
-- CAN library supporting up to 2 CAN interfaces
-  - hardware filter support
-  - No limitation on number of messages
-  - Automatic mapping from/to parameter module
-  - CAN Open SDO support
-  - Fully interrupt driven
-- Error memory
-- ligthweight fixed point arithmetic
-- string functions to be independent of stdlib
-- Parameter module that interfaces to esp8266 web GUI
-- Saving parameters to flash
-- Serial terminal with custom commands and DMA transfer
-- Mathematical functions (sin/cos, arctan, square root)
-- PI controller class
-- Functions for field oriented control
 
 # OTA (over the air upgrade)
 The firmware is linked to leave the 4 kb of flash unused. Those 4 kb are reserved for the bootloader

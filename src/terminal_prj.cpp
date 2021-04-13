@@ -157,7 +157,7 @@ static void MapCan(char *arg)
       //allow gain values < 1 and re-interpret them
       if (i == (numArgs - 1) && iVal == 0)
       {
-         values[i] = fp_atoi(arg, 16);
+         values[i] = fp_atoi(arg);
          //The can values interprets abs(values) < 32 as gain and > 32 as divider
          //e.g. 0.25 means integer division by 4 so we need to calculate div = 1/value
          //0.25 with 16 decimals is 16384, 65536/16384 = 4
@@ -360,7 +360,7 @@ static void ParamSet(char *arg)
    *pParamVal = 0;
    pParamVal++;
 
-   val = fp_atoi(pParamVal, FRAC_DIGITS);
+   val = fp_atoi(pParamVal);
    idx = Param::NumFromString(arg);
 
    if (Param::PARAM_INVALID != idx)

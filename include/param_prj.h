@@ -50,22 +50,38 @@
 //Next value Id: 2005
 /*              category     name         unit       min     max     default id */
 #define PARAM_LIST \
+    PARAM_ENTRY(CAT_POWER,    chargelimit, "A",       0,      255,    255,    10  ) \
+    PARAM_ENTRY(CAT_POWER,    soclimit,    "%",       0,      100,    100,    12  ) \
+    PARAM_ENTRY(CAT_CONTACT,  udcthresh,   "V",       0,      500,    380,    92  ) \
     PARAM_ENTRY(CAT_COMM,    canspeed,    CANSPEEDS, 0,      3,      1,      1   ) \
     PARAM_ENTRY(CAT_COMM,    canperiod,   CANPERIODS,0,      1,      0,      2   ) \
     PARAM_ENTRY(CAT_TEST,    testparam,   "Hz",      -100,   1000,   0,      0   ) \
     VALUE_ENTRY(opmode,      OPMODES, 2000 ) \
+    VALUE_ENTRY(cdmstatus,    CDMSTAT, 2070 ) \
     VALUE_ENTRY(version,     VERSTR,  2001 ) \
+    VALUE_ENTRY(soc,          "%",     2052 ) \
+    VALUE_ENTRY(batfull,      ONOFF,   2069 ) \
+    VALUE_ENTRY(cdmcureq,    "A",     2076 ) \
+    VALUE_ENTRY(chgcurlim,    "A",     2066 ) \
+    VALUE_ENTRY(idccdm,       "A",     2067 ) \
+    VALUE_ENTRY(udccdm,       "V",     2068 ) \
+    VALUE_ENTRY(udcinv,       "V",     2001 ) \
+    VALUE_ENTRY(udcbms,       "V",     2048 ) \
     VALUE_ENTRY(lasterr,     errorListString,  2002 ) \
     VALUE_ENTRY(testain,     "dig",   2003 ) \
     VALUE_ENTRY(cpuload,     "%",     2004 )
 
 
 /***** Enum String definitions *****/
-#define OPMODES      "0=Off, 1=Run"
+#define OPMODES      "0=Off, 1=ChargeStart, 2=ConnectorLock, 3=Charge, 4=ChargeStop"
+#define CDMSTAT      "1=Charging, 2=Malfunction, 4=ConnLock, 8=BatIncomp, 16=SystemMalfunction, 32=Stop"
 #define CANSPEEDS    "0=250k, 1=500k, 2=800k, 3=1M"
 #define CANPERIODS   "0=100ms, 1=10ms"
+#define ONOFF        "0=Off, 1=On, 2=na"
 #define CAT_TEST     "Testing"
 #define CAT_COMM     "Communication"
+#define CAT_POWER    "Power Limit"
+#define CAT_CONTACT  "Contactor Control"
 
 #define VERSTR STRINGIFY(4=VER-name)
 
@@ -79,11 +95,13 @@ enum _canspeeds
    CAN_PERIOD_LAST
 };
 
-enum _modes
+enum modes
 {
    MOD_OFF = 0,
-   MOD_RUN,
-   MOD_LAST
+   MOD_CHARGESTART,
+   MOD_CHARGELOCK,
+   MOD_CHARGE,
+   MOD_CHARGEND
 };
 
 //Generated enum-string for possible errors
