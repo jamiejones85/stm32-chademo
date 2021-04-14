@@ -88,13 +88,12 @@ static void RunChaDeMo()
 
    if (!chargeMode && rtc_get_counter_val() > 100) //100*10ms = 1s
    {
-      //If 2s after boot we don't see voltage on the inverter it means
-      //the inverter is off and we are in charge mode
-      if (Param::GetInt(Param::udcinv) < 10)
+      
+      //Check for Charger start stop 1
+      if (DigIo::charger_in_1.Get())
       {
          chargeMode = true;
          Param::SetInt(Param::opmode, MOD_CHARGESTART);
-         //TODO:: SET CHARGE ENABLE OUTPUT OFF
       }
    }
 

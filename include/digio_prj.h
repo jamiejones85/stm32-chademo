@@ -9,7 +9,13 @@
 */
 
 #define DIG_IO_LIST \
-    DIG_IO_ENTRY(test_in,     GPIOB, GPIO5,  PinMode::INPUT_FLT)   \
-    DIG_IO_ENTRY(led_out,     GPIOC, GPIO12, PinMode::OUTPUT)      \
+    DIG_IO_ENTRY(test_in,               GPIOB, GPIO5,  PinMode::INPUT_FLT)   \
+    DIG_IO_ENTRY(charger_in_1,          GPIOB, GPIO6,  PinMode::INPUT_FLT)   \
+    DIG_IO_ENTRY(charger_in_2,          GPIOB, GPIO7,  PinMode::INPUT_FLT)   \
+    DIG_IO_ENTRY(car_in,                GPIOB, GPIO3,  PinMode::INPUT_FLT)   \
+    DIG_IO_ENTRY(extra_out,             GPIOB, GPIO14, PinMode::OUTPUT)      \
+    DIG_IO_ENTRY(charge_enable_out,     GPIOB, GPIO13, PinMode::OUTPUT)      \
+    DIG_IO_ENTRY(hv_enable_out,         GPIOB, GPIO12, PinMode::OUTPUT)      \
+    DIG_IO_ENTRY(led_out,               GPIOC, GPIO12, PinMode::OUTPUT)      
 
 #endif // PinMode_PRJ_H_INCLUDED
