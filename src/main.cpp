@@ -54,28 +54,28 @@ static void CanCallback(uint32_t id, uint32_t data[2])
       case 0x511:
          break;
       case 0x521:
-         ISA::handle521(data);
+         ISA::handle521(data, rtc_get_counter_val());
          break;
       case 0x522:
-         ISA::handle522(data);
+         ISA::handle522(data, rtc_get_counter_val());
          break;
       case 0x523:
-         ISA::handle523(data);
+         ISA::handle523(data, rtc_get_counter_val());
          break;
       case 0x524:
-         ISA::handle524(data);
+         ISA::handle524(data, rtc_get_counter_val());
          break;
       case 0x525:
-         ISA::handle525(data);
+         ISA::handle525(data, rtc_get_counter_val());
          break;
       case 0x526:
-         ISA::handle526(data);
+         ISA::handle526(data, rtc_get_counter_val());
          break;
       case 0x527:
-         ISA::handle527(data);
+         ISA::handle527(data, rtc_get_counter_val());
          break;
       case 0x528:
-         ISA::handle528(data);
+         ISA::handle528(data, rtc_get_counter_val());
          break;
       default:
          break;
@@ -100,9 +100,9 @@ static void RunChaDeMo()
    /* 1s after entering charge mode, enable charge permission */
    if (Param::GetInt(Param::opmode) == MOD_CHARGESTART && rtc_get_counter_val() > 200)
    {
+      //TODO compatibility check?
       ChaDeMo::SetEnabled(true);
-      //TODO:: SET CHARGE ENABLE OUTPUT ON
-
+      DigIo::charge_enable_out.Set();
    }
 
    if (connectorLockTime == 0 && ChaDeMo::ConnectorLocked())
@@ -110,11 +110,15 @@ static void RunChaDeMo()
       connectorLockTime = rtc_get_counter_val();
       Param::SetInt(Param::opmode, MOD_CHARGELOCK);
    }
-   //10s after locking tell EVSE that we closed the contactor (in fact we have no control)
-   if (Param::GetInt(Param::opmode) == MOD_CHARGELOCK && (rtc_get_counter_val() - connectorLockTime) > 1000)
+
+   //Once charger 2, close HV contactors
+   if (Param::GetInt(Param::opmode) == MOD_CHARGELOCK && (rtc_get_counter_val() - connectorLockTime) > 1000 &&
+         DigIo::charger_in_2.Get())
    {
       ChaDeMo::SetContactor(true);
       Param::SetInt(Param::opmode, MOD_CHARGE);
+      DigIo::hv_enable_out.Set();
+
    }
 
    if (Param::GetInt(Param::opmode) == MOD_CHARGE)
@@ -139,13 +143,13 @@ static void RunChaDeMo()
    {
       if (Param::GetInt(Param::batfull) ||
           Param::Get(Param::soc) >= Param::Get(Param::soclimit) ||
-          Param::GetInt(Param::chargelimit) == 0) //||
-          //!LeafBMS::Alive(rtc_get_counter_val()))
+          Param::GetInt(Param::chargelimit) == 0 ||
+          !ISA::Alive(rtc_get_counter_val()))
       {
-         // if (!LeafBMS::Alive(rtc_get_counter_val()))
-         // {
-         //    ChaDeMo::SetGeneralFault();
-         // }
+         if (!ISA::Alive(rtc_get_counter_val()))
+         {
+            ChaDeMo::SetGeneralFault();
+         }
          ChaDeMo::SetEnabled(false);
          //TODO:: SET CHARGE ENABLE OUTPUT OFF
          Param::SetInt(Param::opmode, MOD_CHARGEND);
@@ -156,10 +160,10 @@ static void RunChaDeMo()
       ChaDeMo::SendMessages(can);
    }
    Param::SetInt(Param::cdmstatus, ChaDeMo::GetChargerStatus());
-   // if (!LeafBMS::Alive(rtc_get_counter_val()))
-   // {
-   //    ErrorMessage::Post(ERR_BMSCOMM);
-   // }
+   if (!ISA::Alive(rtc_get_counter_val()))
+   {
+      ErrorMessage::Post(ERR_SHUNTCOMM);
+   }
 }
 
 

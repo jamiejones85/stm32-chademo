@@ -8,16 +8,17 @@
 class ISA
 {
    public:
-      static void handle511(uint32_t data[2]);
-      static void handle521(uint32_t data[2]);
-      static void handle522(uint32_t data[2]);
-      static void handle523(uint32_t data[2]);
-      static void handle524(uint32_t data[2]);
-      static void handle525(uint32_t data[2]);
-      static void handle526(uint32_t data[2]);
-      static void handle527(uint32_t data[2]);
-      static void handle528(uint32_t data[2]);
-
+      static void handle511(uint32_t data[8], uint32_t time);
+      static void handle521(uint32_t data[8], uint32_t time);
+      static void handle522(uint32_t data[8], uint32_t time);
+      static void handle523(uint32_t data[8], uint32_t time);
+      static void handle524(uint32_t data[8], uint32_t time);
+      static void handle525(uint32_t data[8], uint32_t time);
+      static void handle526(uint32_t data[8], uint32_t time);
+      static void handle527(uint32_t data[8], uint32_t time);
+      static void handle528(uint32_t data[8], uint32_t time);
+      static bool Alive(uint32_t time);
+      
       static void Start(Can* can);
       static void Stop(Can* can);
       static void Restart(Can* can);
@@ -54,7 +55,9 @@ class ISA
    protected:
 
    private:
-      static int framecount;
+        static int framecount;
+        static uint32_t lastRecv;
+
 
 
 };

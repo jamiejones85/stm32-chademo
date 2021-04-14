@@ -1,6 +1,5 @@
 #include <SimpleISA.h>
 
-    int ISA::framecount = 0;
     float ISA::Amperes;   // Floating point with current in Amperes
 	double ISA::AH;      //Floating point with accumulated ampere-hours
 	double ISA::KW;
@@ -25,11 +24,19 @@
 	long ISA::lastAs;
 	long ISA::wh;
   	long ISA::lastWh;	
+    uint32_t ISA::lastRecv = 0;
+    int ISA::framecount = 0;
 
-void ISA::handle521(uint32_t data[2])  //AMperes
+bool ISA::Alive(uint32_t time)
+{
+   return (time - ISA::lastRecv) < 100;
+}
+
+void ISA::handle521(uint32_t data[8], uint32_t time)  //AMperes
 
 {	
-	ISA::framecount++;
+	ISA::lastRecv = time;
+    ISA::framecount++;
 	long current=0;
     current = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
@@ -40,10 +47,11 @@ void ISA::handle521(uint32_t data[2])  //AMperes
     	
 }
 
-void ISA::handle522(uint32_t data[2])  //Voltage
+void ISA::handle522(uint32_t data[8], uint32_t time)  //Voltage
 
 {	
     ISA::framecount++;
+    ISA::lastRecv = time;
 	long volt=0;
     volt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
@@ -63,10 +71,11 @@ void ISA::handle522(uint32_t data[2])  //Voltage
      	
 }
 
-void ISA::handle523(uint32_t data[2]) //Voltage2
+void ISA::handle523(uint32_t data[8], uint32_t time) //Voltage2
 
 {	
 	ISA::framecount++;
+    ISA::lastRecv = time;
 	long volt=0;
     volt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
@@ -82,10 +91,11 @@ void ISA::handle523(uint32_t data[2]) //Voltage2
    	
 }
 
-void ISA::handle524(uint32_t data[2])  //Voltage3
+void ISA::handle524(uint32_t data[8], uint32_t time)  //Voltage3
 
 {	
 	ISA::framecount++;
+    ISA::lastRecv = time;
 	long volt=0;
     volt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
@@ -97,10 +107,11 @@ void ISA::handle524(uint32_t data[2])  //Voltage3
     //  if(debug2)Serial<<"Voltage: "<<Voltage<<" vdc Voltage 3: "<<Voltage3<<" vdc "<<volt<<" mVdc frames:"<<framecount<<"\n";
 }
 
-void ISA::handle525(uint32_t data[2])  //Temperature
+void ISA::handle525(uint32_t data[8], uint32_t time)  //Temperature
 
 {	
 	ISA::framecount++;
+    ISA::lastRecv = time;
 	long temp=0;
     temp = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
@@ -112,10 +123,11 @@ void ISA::handle525(uint32_t data[2])  //Temperature
 
 
 
-void ISA::handle526(uint32_t data[2]) //Kilowatts
+void ISA::handle526(uint32_t data[8], uint32_t time) //Kilowatts
 
 {	
 	ISA::framecount++;
+    ISA::lastRecv = time;
 	watt = 0;
     watt = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     
@@ -126,10 +138,11 @@ void ISA::handle526(uint32_t data[2]) //Kilowatts
 }
 
 
-void ISA::handle527(uint32_t data[2]) //Ampere-Hours
+void ISA::handle527(uint32_t data[8], uint32_t time) //Ampere-Hours
 
 {	
 	ISA::framecount++;
+    ISA::lastRecv = time;
 	ISA::As = 0;
     ISA::As = (data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]);
     
@@ -141,11 +154,11 @@ void ISA::handle527(uint32_t data[2]) //Ampere-Hours
     
 }
 
-void ISA::handle528(uint32_t data[2])  //kiloWatt-hours
+void ISA::handle528(uint32_t data[8], uint32_t time)  //kiloWatt-hours
 
 {	
 	ISA::framecount++;
-	
+	ISA::lastRecv = time;	
     ISA::wh = (long)((data[5] << 24) | (data[4] << 16) | (data[3] << 8) | (data[2]));
     ISA::KWH += (ISA::wh - ISA::lastWh)/1000.0f;
 	ISA::lastWh = ISA::wh;
